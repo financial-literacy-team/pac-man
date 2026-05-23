@@ -1,0 +1,34 @@
+{
+  "name": "@financial-literacy-team/pacman-game",
+  "version": "1.0.0",
+  "description": "Mini-game pacman",
+  "keywords": [
+    "pacman"
+  ],
+  "homepage": "https://github.com/financial-literacy-team/pacman#readme",
+  "bugs": {
+    "url": "https://github.com/financial-literacy-team/pacman/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/financial-literacy-team/pacman.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "dist/pacman.umd.ts",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^6.0.7",
+    "typescript": "^6.0.3",
+    "vite": "^8.0.14",
+    "vue": "^3.5.34"
+  }
+}
