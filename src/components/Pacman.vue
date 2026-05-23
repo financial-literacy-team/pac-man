@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
 
+const handleGameFinished = (result: any) => {
+  console.log("Гра завершена, результат:", result);
+};
+
 const emit = defineEmits(['gameOver'])
 const canvasRef = ref<HTMLCanvasElement | null>(null)
 
@@ -94,6 +98,10 @@ onUnmounted(() => { window.removeEventListener('keydown', move); cancelAnimation
     <div v-else class="results">
       <button @click="restartGame">Грати знову!</button>
     </div>
+
+    <div class="scenario-container">
+     <PacmanGame @gameOver="handleGameFinished" />
+   </div>
   </div>
 </template>
 

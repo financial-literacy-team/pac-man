@@ -6,4 +6,5 @@
 
 <script setup lang="ts">
 import { PacmanGame } from './index'
+import Pacman from './components/Pacman.vue'
 </script>
