@@ -1,11 +1,9 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, nextTick, onMounted, onUnmounted } from 'vue'
 
-const handleGameFinished = (result: any) => {
-  console.log("Гра завершена, результат:", result);
-};
-
-const emit = defineEmits(['gameOver'])
+const emit = defineEmits<{
+  gameOver: [result: { score: number }]
+}>()
 const canvasRef = ref<HTMLCanvasElement | null>(null)
 
 const gameState = ref('playing')
@@ -35,12 +33,13 @@ const move = (e: KeyboardEvent) => {
   if (e.key === 'ArrowRight') { pacman.value.dx = 4; pacman.value.dy = 0 }
 }
 
-const restartGame = () => {
-  window.location.reload();
+const restartGame = async () => {
   map.value = generateMap()
   score.value = 0
   gameState.value = 'playing'
   pacman.value = { x: 80, y: 80, dx: 0, dy: 0, mouthOpen: 0 }
+  await nextTick()
+  gameLoop()
 }
 
 const gameLoop = () => {
@@ -62,15 +61,17 @@ const gameLoop = () => {
     pacman.value.y = nextY
   }
 
-  if (map.value[gridY]?.[gridX] === 0) {
-    map.value[gridY][gridX] = 2
+  const currentRow = map.value[gridY]
+  if (currentRow?.[gridX] === 0) {
+    currentRow[gridX] = 2
     score.value += 10
   }
 
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < cols; c++) {
-      if (map.value[r][c] === 1) { ctx.fillStyle = 'blue'; ctx.fillRect(c * cellSize, r * cellSize, cellSize, cellSize) }
-      else if (map.value[r][c] === 0) { ctx.fillStyle = 'white'; ctx.beginPath(); ctx.arc(c * cellSize + 20, r * cellSize + 20, 3, 0, Math.PI * 2); ctx.fill() }
+      const tile = map.value[r]?.[c]
+      if (tile === 1) { ctx.fillStyle = 'blue'; ctx.fillRect(c * cellSize, r * cellSize, cellSize, cellSize) }
+      else if (tile === 0) { ctx.fillStyle = 'white'; ctx.beginPath(); ctx.arc(c * cellSize + 20, r * cellSize + 20, 3, 0, Math.PI * 2); ctx.fill() }
     }
   }
 
@@ -82,7 +83,11 @@ const gameLoop = () => {
   ctx.lineTo(pacman.value.x, pacman.value.y)
   ctx.fill()
 
-  if (!map.value.flat().includes(0)) gameState.value = 'finished'
+  if (!map.value.flat().includes(0)) {
+    gameState.value = 'finished'
+    emit('gameOver', { score: score.value })
+    return
+  }
   animationFrameId = requestAnimationFrame(gameLoop)
 }
 
@@ -99,9 +104,6 @@ onUnmounted(() => { window.removeEventListener('keydown', move); cancelAnimation
       <button @click="restartGame">Грати знову!</button>
     </div>
 
-    <div class="scenario-container">
-     <PacmanGame @gameOver="handleGameFinished" />
-   </div>
   </div>
 </template>
 
